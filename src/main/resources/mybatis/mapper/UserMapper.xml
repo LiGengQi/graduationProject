@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ligq.graduate.mapper.UserMapper">
+    <select id="isExistUser" resultType="com.ligq.graduate.pojo.User">
+        select
+            *
+        from user
+        where open_id = #{openId} and user_kind = #{userKind}
+    </select>
+
+    <insert id="userRegistration" parameterType="com.ligq.graduate.pojo.User">
+        insert into user values (#{openId},#{sessionKey},#{userName},#{userImg},#{userKind});
+    </insert>
+
+    <insert id="uploadAvatar" parameterType="String">
+        insert into user('open_id','user_img','user_name') values (#{openId},#{avatarUrl}),#{userName});
+    </insert>
+</mapper>

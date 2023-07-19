@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ligq.graduate.mapper.DishesMapper">
+    <resultMap id="dishesList" type="com.ligq.graduate.pojo.Dishes">
+        <result property="storeId" column="store_id"></result>
+        <result property="dishNo" column="dish_no"></result>
+        <result property="spuId" column="spu_id"></result>
+        <result property="price" column="price"></result>
+        <result property="primaryImage" column="primary_image"></result>
+        <result property="dishName" column="dish_name"></result>
+        <result property="rawMaterials" column="raw_materials"></result>
+        <result property="detailedDescription" column="detailed_description"></result>
+        <result property="soldNum" column="sold_num"></result>
+        <result property="spuStockQuantity" column="spu_stock_quantity"></result>
+        <collection property="dishImage" ofType="String">
+            <result property="dishImage" column="dish_image_src"></result>
+        </collection>
+        <collection property="desc" ofType="String">
+            <result property="desc" column="image_src"></result>
+        </collection>
+    </resultMap>
+    <select id="queryDishesList" resultMap="dishesList">
+        SELECT
+            *
+        FROM
+            dishes d
+                INNER JOIN dish_image di ON d.dish_no = di.dish_no
+                LEFT OUTER JOIN desc_image de ON de.dish_no = d.dish_no
+        <where>
+            <if test="dishNo != -1">
+                d.dish_no = #{dishNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="searchDishLish" resultMap="dishesList">
+        SELECT
+        *
+        FROM
+        dishes d
+        INNER JOIN dish_image di ON d.dish_no = di.dish_no
+        LEFT OUTER JOIN desc_image de ON de.dish_no = d.dish_no
+        <where>
+            dish_name like '%${dishKey}%'
+        </where>
+    </select>
+
+    <select id="searchOwnDish" resultType="com.ligq.graduate.pojo.Dishes">
+        SELECT
+            *
+        FROM
+            dishes di
+        INNER JOIN canteen_stall cs
+        ON di.store_id = cs.stall_no
+        WHERE
+            cs.open_id = #{openId}
+    </select>
+
+</mapper>

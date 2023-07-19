@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ligq.graduate.mapper.UserInformationMapper">
+
+    <resultMap id="infoList" type="com.ligq.graduate.pojo.UserInformation">
+        <result property="infoId" column="info_id"></result>
+        <result property="userImg" column="user_img"></result>
+        <result property="userName" column="user_name"></result>
+        <result property="content" column="content"></result>
+        <result property="infoTime" column="info_time"></result>
+        <collection property="resourceUrl" ofType="String">
+            <result property="desc" column="image_url"></result>
+        </collection>
+    </resultMap>
+
+    <select id="queryUserInfoList" resultMap="infoList">
+        SELECT
+            *
+        FROM
+            user_information info
+                INNER JOIN USER u
+                    ON u.open_id = info.open_id
+                LEFT JOIN info_image img
+                    ON img.info_id = info.Info_id
+        ORDER BY
+            info.info_time DESC,
+            img.image_id ASC
+    </select>
+
+    <insert id="pushUserInfo"
+            parameterType="com.ligq.graduate.pojo.UserInformation"
+            useGeneratedKeys="true"
+            keyProperty="infoId"
+            keyColumn="info_id">
+        INSERT INTO user_information ( open_id, content,info_time )
+        VALUES
+            (#{openId},#{content},CURRENT_TIMESTAMP())
+    </insert>
+
+    <insert id="pushInfoImage">
+        INSERT INTO info_image ( image_url, info_id )
+        VALUES
+            (#{imgUrl},#{infoId})
+    </insert>
+
+    <delete id="deleteUserInfo" parameterType="int">
+        DELETE
+        FROM
+            user_information
+        WHERE
+            info_id = #{infoId}
+    </delete>
+</mapper>

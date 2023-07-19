@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ligq.graduate.mapper.DishCommentMapper">
+    <resultMap id="dishComment" type="com.ligq.graduate.pojo.DishComment">
+        <result property="dishNo" column="dish_no"></result>
+        <result property="skuId" column="comment_no"></result>
+        <result property="commentContent" column="comment_content"></result>
+        <result property="commentScore" column="comment_score"></result>
+        <result property="userName" column="user_name"></result>
+        <result property="userHeadUrl" column="user_img"></result>
+        <result property="commentTime" column="comment_time"></result>
+        <result property="sellerReply" column="seller_reply"></result>
+        <result property="dishInfo" column="dish_info"></result>
+        <collection property="commentResources" javaType="java.util.List" ofType="com.ligq.graduate.pojo.CommentResources">
+            <result property="src" column="comment_src"></result>
+            <result property="type" column="comment_type"></result>
+            <result property="coverSrc" column="comment_cover_src"></result>
+        </collection>
+    </resultMap>
+
+    <select id="queryCommentList" resultMap="dishComment" parameterType="String">
+        SELECT
+            *
+        FROM
+            dish_comment d
+                LEFT JOIN comment_image c
+                          ON d.comment_no = c.comment_no
+                LEFT JOIN user u
+                          ON d.user_no = u.open_id
+        WHERE d.dish_no = #{dishNo}
+    </select>
+
+    <insert id="pushComment"
+            parameterType="com.ligq.graduate.pojo.DishComment"
+            useGeneratedKeys="true"
+            keyProperty="skuId"
+            keyColumn="comment_no">
+        insert into
+            dish_comment(dish_no,comment_content,comment_score,user_no)
+        values (#{dishNo}, #{commentContent}, #{commentScore}, #{userNo});
+    </insert>
+
+    <insert id="pushCommentImage" parameterType="com.ligq.graduate.pojo.CommentResources">
+        insert into
+            comment_image(comment_no, comment_src, comment_type, comment_cover_src)
+        values (#{commentNo}, #{src}, #{type}, #{coverSrc});
+    </insert>
+
+</mapper>
